@@ -85,24 +85,32 @@ def clear_subgenres():
 	with open("listened.txt", 'w'): pass
 
 def subgenre_tracked( subgenre ):
-	with open("listened.txt",'r') as file:
-		data = file.readlines()
+	try:
+		with open("listened.txt",'r') as file:
+			data = file.readlines()
 
-	for line in data:
-		if str(subgenre) in line:
-			return True
-	return False
+		for line in data:
+			if str(subgenre) in line:
+				return True
+		return False
+	except:
+		# File not found
+		return False
 
 # Helpers
 
 def all_tracked( dictionary ):
-	with open("listened.txt",'r') as file:
-		data = file.readlines()
-	file_length = len(data)
+	try:
+		with open("listened.txt",'r') as file:
+			data = file.readlines()
+		file_length = len(data)
 
-	if file_length == total_subgenres(dictionary):
-		return True
-	else:
+		if file_length == total_subgenres(dictionary):
+			return True
+		else:
+			return False
+	except:
+		# File not found
 		return False
 	
 def total_subgenres( dictionary ):
@@ -115,9 +123,14 @@ def total_subgenres( dictionary ):
 
 # Selection logic
 
-def get_subgenre( dictionary ):
-	key = random.choice(list(dictionary.keys()))
+def get_subgenre(dictionary, key=None):
+	if key is None:
+		key = random.choice(list(dictionary.keys()))
+	else:
+		if key not in dictionary:
+			raise SystemExit('Error: Key not in dictionary')
 	item = random.choice(dictionary[key])
+
 	return item
 
 
@@ -128,12 +141,14 @@ def main():
 	parser.add_argument('-n', help='Do not track the selected subgenre in a txt file. (default: track)', action='store_false')
 	parser.add_argument('-r', '--repeat', help='Allow tracked subgenres to be chosen again. (default: do not repeat)', action='store_true')
 	parser.add_argument('-c', '--clear', help='Clear the previously tracked subgenres. (default: do not clear)',action='store_true')
+	parser.add_argument('-g', help='Choose a specific genre. (default: random)', nargs=1)
 
 	args = parser.parse_args()
 
 	track = args.n
 	repeat = args.repeat
 	clear = args.clear
+	genre = args.g[0]
 
 	dictionary = genres
 
@@ -141,7 +156,7 @@ def main():
 		clear_subgenres()
 		return
 
-	subgenre = get_subgenre(dictionary)
+	subgenre = get_subgenre(dictionary, genre)
 
 	if not repeat:
 		while subgenre_tracked(subgenre):
