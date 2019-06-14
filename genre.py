@@ -133,6 +133,13 @@ def get_subgenre(dictionary, key=None):
 
 	return item
 
+# Output
+
+def display_keys(dictionary):
+	print("Available genres:")
+	for key in dictionary:
+		print(key)
+	print("\n")
 
 # User input
 
@@ -142,15 +149,23 @@ def main():
 	parser.add_argument('-r', '--repeat', help='Allow tracked subgenres to be chosen again. (default: do not repeat)', action='store_true')
 	parser.add_argument('-c', '--clear', help='Clear the previously tracked subgenres. (default: do not clear)',action='store_true')
 	parser.add_argument('-g', help='Choose a specific genre. (default: random)', nargs=1)
+	parser.add_argument('-p', help='Print the list of genres.', action='store_true')
 
 	args = parser.parse_args()
 
 	track = args.n
 	repeat = args.repeat
 	clear = args.clear
-	genre = args.g[0]
+	if args.g is None:
+		genre = None
+	else:
+		genre = args.g[0]
+	display = args.p
 
 	dictionary = genres
+
+	if display:
+		display_keys(dictionary)
 
 	if clear:
 		clear_subgenres()
